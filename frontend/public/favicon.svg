@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="LibroRank">
+  <!-- Favicon: spine-forward stack, flat pastels, thick silhouettes -->
+  <rect width="32" height="32" rx="8" fill="#EDE8F7"/>
+  <!-- back spine -->
+  <rect x="5" y="10" width="6" height="16" rx="2" fill="#9A8AB8"/>
+  <rect x="5" y="10" width="6" height="2.5" rx="1" fill="#B5A8CC"/>
+  <!-- middle spine -->
+  <rect x="10.5" y="8" width="6.5" height="18" rx="2" fill="#C9B896"/>
+  <rect x="10.5" y="8" width="6.5" height="2.5" rx="1" fill="#DDD0B0"/>
+  <!-- front / favorited spine -->
+  <rect x="17" y="6" width="7.5" height="20" rx="2" fill="#F08BA3"/>
+  <rect x="17" y="6" width="7.5" height="2.5" rx="1" fill="#F9B4C4"/>
+  <!-- recommendation star -->
+  <path fill="#FFD95A" d="M20.75 10.2 21.9 12.5 24.5 12.85 22.55 14.55 23.15 17.1 20.75 15.75 18.35 17.1 18.95 14.55 17 12.85 19.6 12.5z"/>
+</svg>

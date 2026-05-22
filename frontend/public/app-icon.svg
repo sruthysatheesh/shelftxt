@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LibroRank">
+  <!-- App icon: same mark, room for soft Y2K label band -->
+  <rect width="512" height="512" rx="112" fill="#EDE8F7"/>
+  <rect x="80" y="160" width="96" height="256" rx="32" fill="#9A8AB8"/>
+  <rect x="80" y="160" width="96" height="40" rx="16" fill="#B5A8CC"/>
+  <rect x="168" y="128" width="104" height="288" rx="32" fill="#C9B896"/>
+  <rect x="168" y="128" width="104" height="40" rx="16" fill="#DDD0B0"/>
+  <rect x="272" y="96" width="120" height="320" rx="32" fill="#F08BA3"/>
+  <rect x="272" y="96" width="120" height="40" rx="16" fill="#F9B4C4"/>
+  <path fill="#FFD95A" d="M332 163 349 200 408 206 362 258 374 328 332 294 290 328 302 258 256 206 315 200z"/>
+  <rect x="96" y="432" width="320" height="8" rx="4" fill="#D8D0EC" opacity="0.9"/>
+</svg>

@@ -8,7 +8,11 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "LibroRank",
-  description: "Shelves, recommendations, and CSV import for your reading list"
+  description: "Shelves, recommendations, and CSV import for your reading list",
+  icons: {
+    icon: [{ url: "/app-icon-mono.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/app-icon-mono.svg", type: "image/svg+xml", sizes: "512x512" }]
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

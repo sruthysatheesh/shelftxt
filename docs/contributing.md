@@ -1,6 +1,9 @@
 # Contributing
 
-How to work on ShelfTxt — setup, workflow, and what we expect in changes.  
+How to work on ShelfTxt — setup, workflow, and what we expect in changes.
+
+**Start here:** [CONTRIBUTING.md](../CONTRIBUTING.md) (root guide — setup, philosophy, solo-maintainer note).
+
 For **where code lives**, see [architecture/system-overview.md](architecture/system-overview.md). For **why** structural choices were made, see [decisions.md](decisions.md).
 
 ---

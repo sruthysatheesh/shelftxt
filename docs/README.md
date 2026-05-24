@@ -20,7 +20,8 @@ Developer reference for architecture, APIs, deployment, and operations.
 | [deployment.md](deployment.md) | Render + Vercel runbook, env vars, verification |
 | [decisions.md](decisions.md) | Architecture decision records (ADRs) |
 | [development.md](development.md) | Local setup, tests, CLI |
-| [contributing.md](contributing.md) | How to contribute — workflow, PR checklist |
+| [contributing.md](contributing.md) | Workflow detail — PR checklist, commit style |
+| [opensource.md](opensource.md) | Why the project is open source, devlogs, transparency |
 | [troubleshooting.md](troubleshooting.md) | Common errors and fixes |
 
 ## Engineering notes

@@ -1,5 +1,8 @@
 # ShelfTxt
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://github.com/tranguyeenn/LibroRank/actions/workflows/tests.yml/badge.svg)](https://github.com/tranguyeenn/LibroRank/actions/workflows/tests.yml)
+
 A personal reading library and recommendation app — organize what you own, track what you are reading, and get a suggested next book from your to-read shelf.
 
 **Live:** [shelftxt.vercel.app](https://shelftxt.vercel.app) · **API:** [shelftxt.onrender.com/docs](https://shelftxt.onrender.com/docs)
@@ -133,7 +136,8 @@ Run Python commands from the **repo root** so `backend` resolves as a package.
 | [docs/architecture/system-overview.md](docs/architecture/system-overview.md) | Folder responsibilities |
 | [docs/deployment.md](docs/deployment.md) | Render + Vercel runbook |
 | [docs/decisions.md](docs/decisions.md) | Architecture decisions (ADRs) |
-| [docs/contributing.md](docs/contributing.md) | How to contribute |
+| [docs/contributing.md](docs/contributing.md) | Workflow detail (see also [CONTRIBUTING.md](CONTRIBUTING.md)) |
+| [docs/opensource.md](docs/opensource.md) | Why ShelfTxt is open source |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Common errors |
 | [docs/development.md](docs/development.md) | Local setup |
 | [docs/api.md](docs/api.md) | REST reference |
@@ -159,25 +163,30 @@ Recent work: backend layered refactor (routes, services, repository) — [2026-0
 
 ---
 
+## Open Source
+
+ShelfTxt is MIT-licensed. The ranking logic, CSV model, and API are in this repo so you can inspect, fork, and self-host without a subscription wall.
+
+- [docs/opensource.md](docs/opensource.md) — mission, documentation philosophy, devlogs
+- [CHANGELOG.md](CHANGELOG.md) — what changed
+- [SECURITY.md](SECURITY.md) — report vulnerabilities privately (not via public issues)
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+
+---
+
 ## Roadmap
 
-Realistic directions — not commitments:
+Near-, mid-, and long-term directions (not commitments): [ROADMAP.md](ROADMAP.md).
 
-- **Architecture** — finish moving shelf CRUD/PATCH into `services/books.py`; remove legacy `api_draft.py`
-- **Caching** — smarter recommendation cache invalidation; optional persistence beyond in-process LRU
-- **Recommendations** — richer ranking signals (genre, recency weighting UI, multiple suggestions)
-- **Import / export** — Goodreads-style export, better CSV column mapping in the web UI
-- **Accessibility** — keyboard navigation, screen-reader labels, reduced-motion-friendly UI
-- **Discovery** — surface *legal free* reading options (public domain, library links) tied to books already on your shelf — research phase only
-- **Storage** — optional database or persistent disk for production libraries on Render
-
-Track in [DEVLOG.md](DEVLOG.md) and [refactor backlog](docs/architecture/system-overview.md#refactor-backlog).
+Shipped work and refactors: [DEVLOG.md](DEVLOG.md) · [docs/devlogs/](docs/devlogs/)
 
 ---
 
 ## Contributing
 
-See [docs/contributing.md](docs/contributing.md) for workflow, PR checklist, and where to put new code.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) — setup, architecture pointers, self-review checklist, and testing.
+
+More workflow detail: [docs/contributing.md](docs/contributing.md). Use GitHub issue/PR templates under `.github/`.
 
 ---
 

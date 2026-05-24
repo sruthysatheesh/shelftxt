@@ -1,6 +1,7 @@
-# services/recommendation.py
+# backend/services/recommendation.py
 
 import numpy as np
+from functools import lru_cache
 
 from backend.book_data import load_data
 from backend.preprocess.normalize import normalize_rating, compute_recency
@@ -11,19 +12,36 @@ def clean_for_json(df):
     return df.replace({np.nan: None})
 
 
+@lru_cache(maxsize=1)
 def get_recommendation():
+
     df = load_data()
 
     if df.empty:
+        print("dataframe is empty")
         return []
 
     df = normalize_rating(df)
+
     df = compute_recency(df)
 
     tbr_ranked = score_tbr_books(df)
+
     rec = recommend_one(tbr_ranked)
 
-    if rec is None or rec.empty:
+    if rec is None:
+        print("recommend_one returned None")
         return []
 
-    return clean_for_json(rec).to_dict(orient="records")
+    if rec.empty:
+        print("recommend_one returned empty DataFrame")
+        return []
+
+    result = clean_for_json(rec).to_dict(orient="records")
+
+    return result
+
+
+def refresh_recommendation_cache():
+    get_recommendation.cache_clear()
+    return {"status": "recommendation cache cleared"}

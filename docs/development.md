@@ -70,7 +70,7 @@ Shares `backend/data/processed/books.csv` with the API.
 
 | File | Coverage |
 |------|----------|
-| `tests/test_api.py` | FastAPI routes (mocked persistence) |
+| `tests/test_api.py` | `backend.api.app` — routes + services (mocked `load_data` / `get_recommendation`) |
 | `tests/test_flexible_pipeline.py` | Ingest, validation, ranking |
 
 See [contributing.md](contributing.md) for conventions.

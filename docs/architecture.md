@@ -2,7 +2,7 @@
 
 ## System context
 
-Shelftxt (LibroRank) is a **monorepo monolith**: one codebase, three runnable surfaces, two production hosts.
+Shelftxt is a **monorepo monolith**: one codebase, three runnable surfaces, two production hosts.
 
 | Surface | Stack | Host (production) | Entry |
 |---------|-------|-------------------|-------|
@@ -11,7 +11,7 @@ Shelftxt (LibroRank) is a **monorepo monolith**: one codebase, three runnable su
 | Batch pipeline | Python (CLI / scripts) | Local only | `backend/ingest/pipeline.py` |
 | CLI | Python stdin menu | Local only | `cli/manage_books.py` |
 
-Persistent app state is a single CSV: `backend/data/processed/books.csv`, owned by `backend/book_data.py`.
+Persistent app state is a single CSV: `backend/data/processed/books.csv`, accessed through `backend/book_data.py` and `backend/repository/books_repository.py`.
 
 ---
 
@@ -23,21 +23,24 @@ flowchart LR
     UI[shelftxt.vercel.app]
   end
   subgraph vercel [Vercel]
-    Next[Next.js static + SSR shell]
+    Next[Next.js]
   end
   subgraph render [Render]
-    API[FastAPI backend.api]
+    API[backend.api]
+    Routes[routes/]
+    Svc[services/]
+    Repo[repository + book_data]
     CSV[(books.csv)]
   end
 
-  UI -->|page assets| Next
-  UI -->|fetch /books, /recommend, …| API
-  API --> CSV
+  UI -->|assets| Next
+  UI -->|GET /books, /recommend, …| API
+  API --> Routes --> Svc
+  Svc --> Repo --> CSV
 ```
 
-**Important:** In production the browser calls **Render directly** (`https://shelftxt.onrender.com/...`), not Vercel `/api/*`. See [decisions.md](decisions.md#adr-003-production-api-calls-bypass-vercel-proxy).
-
-Local dev still uses Next.js route handlers as a same-origin proxy (`/api/*` → `127.0.0.1:8000`).
+**Production:** Browser → Render directly (`frontend/lib/apiUrl.ts`).  
+**Local dev:** Browser → `/api/*` → Next.js route handlers → `127.0.0.1:8000`. See [decisions.md](decisions.md#adr-003-production-api-calls-bypass-vercel-proxy).
 
 ---
 
@@ -45,80 +48,91 @@ Local dev still uses Next.js route handlers as a same-origin proxy (`/api/*` →
 
 ```txt
 shelftxt/
-├── backend/                 # Python application package
-│   ├── api.py               # FastAPI app, routes, schemas (transitional)
-│   ├── book_data.py         # CSV persistence (“repository”)
-│   ├── services/            # Business orchestration
-│   │   └── recommendation.py
-│   ├── routes/              # Reserved — split from api.py later
-│   ├── schemas/             # Reserved — Pydantic models later
-│   ├── preprocess/          # Normalization for ranking
-│   ├── ranking/             # Scoring algorithms
-│   ├── ingest/              # Batch CSV pipeline
+├── backend/
+│   ├── api.py                 # FastAPI app: CORS, lifespan, register routers
+│   ├── book_data.py           # CSV I/O implementation
+│   ├── repository/
+│   │   └── books_repository.py   # Thin wrapper over book_data
+│   ├── routes/
+│   │   ├── health.py          # GET /, GET|HEAD /health
+│   │   ├── books.py           # /books, /books/import, /books/remove
+│   │   └── recommendation.py  # GET /recommend, POST /recommend/refresh
+│   ├── schemas/
+│   │   └── books.py           # Pydantic request bodies
+│   ├── services/
+│   │   ├── books.py           # delete_book_by_title, parse_date_or_today
+│   │   └── recommendation.py  # get_recommendation (+ LRU cache)
+│   ├── preprocess/
+│   ├── ranking/
+│   ├── ingest/
 │   └── data/
-│       ├── processed/       # Live library (gitignored)
-│       └── raw/             # Optional staging
-├── frontend/                # Next.js UI
-├── cli/                     # Interactive shelf helper
-├── tests/                   # Python unit tests
-├── docs/                    # Technical documentation
-├── api.py                   # Legacy ASGI shim: uvicorn api:app
-├── requirements.txt         # Python deps (repo root — required for Render)
-├── Procfile                 # Render start command
-└── render.yaml              # Optional Render Blueprint
+├── frontend/
+├── cli/
+├── tests/
+├── api.py                     # Shim: uvicorn api:app → backend.api
+├── requirements.txt
+└── Procfile
 ```
 
-Run Python from **repo root** so `backend` resolves as a package:
+Run from **repo root**:
 
 ```bash
 uvicorn backend.api:app --reload
 python -m unittest discover -s tests -v
-python -m cli.manage_books
 ```
 
 ---
 
-## Backend layers (target model)
-
-Refactor is incremental. Today most HTTP logic still lives in `backend/api.py`; recommendation is extracted.
+## Backend request flow
 
 ```mermaid
 flowchart TB
-  subgraph http [HTTP layer]
-    Routes[backend/api.py routes]
+  subgraph http [HTTP — routes/]
+    H[health.py]
+    B[books.py]
+    R[recommendation.py]
   end
-  subgraph services [Service layer]
-    Rec[services/recommendation.py]
-    Books[shelf CRUD — still in api.py]
+  subgraph services [services/]
+    SB[books.py]
+    SR[recommendation.py]
   end
-  subgraph domain [Algorithms]
-    Norm[preprocess/normalize.py]
-    Score[ranking/score.py]
-  end
-  subgraph persistence [Persistence]
+  subgraph persistence [persistence]
+    REP[repository/books_repository.py]
     BD[book_data.py]
     CSV[(books.csv)]
   end
-  subgraph batch [Batch only]
-    Pipe[ingest/pipeline.py]
+  subgraph algorithms [algorithms]
+    Norm[preprocess/normalize.py]
+    Score[ranking/score.py]
   end
 
-  Routes --> Rec
-  Routes --> Books
-  Rec --> BD
-  Rec --> Norm --> Score
-  Books --> BD
-  BD --> CSV
-  Pipe --> Norm --> Score
+  B --> SB
+  B --> REP
+  R --> SR
+  SR --> REP
+  SR --> Norm --> Score
+  REP --> BD --> CSV
 ```
 
-| Layer | Responsibility | Rule |
-|-------|----------------|------|
-| **Routes** (`api.py`) | HTTP, status codes, validation, call services | No ranking math, no raw pandas shelf rules long-term |
-| **Services** | Use-cases: “recommend one book”, “move to read” | Orchestrate repo + algorithms; no FastAPI imports |
-| **Repository** (`book_data.py`) | Load/save CSV, column coercion | No shelf business rules |
-| **Algorithms** (`preprocess/`, `ranking/`) | Pure transforms and scoring | No HTTP, no file I/O |
-| **Ingest** (`ingest/`) | Arbitrary CSV → canonical schema | Separate from live app CSV path |
+| Layer | Module | Responsibility |
+|-------|--------|----------------|
+| **App** | `api.py` | Create `FastAPI`, CORS, keep-warm scheduler, `include_router()` |
+| **Routes** | `routes/*.py` | HTTP methods, call services, return responses |
+| **Schemas** | `schemas/books.py` | Pydantic validation for request bodies |
+| **Services** | `services/*.py` | Use-cases and orchestration |
+| **Repository** | `repository/books_repository.py` | `get_all_books()`, `save_books()` — delegates to `book_data` |
+| **Persistence** | `book_data.py` | CSV path, columns, load/save coercion |
+| **Algorithms** | `preprocess/`, `ranking/` | Normalization and scoring (no HTTP, no I/O) |
+
+### Route map
+
+| Router file | Paths |
+|-------------|-------|
+| `routes/health.py` | `GET /`, `GET|HEAD /health` |
+| `routes/books.py` | `GET|POST|PATCH|DELETE /books`, `POST /books/remove`, `POST /books/import` |
+| `routes/recommendation.py` | `GET /recommend`, `POST /recommend/refresh` |
+
+Shelf PATCH logic (want / reading / read / dnf) remains in `routes/books.py` for now; delete uses `services/books.delete_book_by_title`.
 
 ---
 
@@ -126,34 +140,25 @@ flowchart TB
 
 ### App path (UI + API + CLI)
 
-- **Schema:** Goodreads-style columns (`Title`, `Authors`, `Read Status`, …). See [data-model.md](data-model.md).
-- **Read/write:** `book_data.load_data()` / `save_data()`.
-- **Ranking:** On demand in `GET /recommend` via `services/recommendation.py`; scores are **not** persisted to CSV.
-- **Import (UI):** Browser parses CSV → `POST /books/import` JSON — does **not** use the flexible ingest pipeline.
+- **Schema:** Goodreads-style columns — [data-model.md](data-model.md).
+- **Persistence:** `book_data.load_data()` / `save_data()` (via repository in new code paths).
+- **Ranking:** `GET /recommend` → `services/recommendation.get_recommendation()`; scores not stored in CSV.
+- **UI import:** Client CSV → `POST /books/import` (not the batch pipeline).
 
-### Batch path (flexible pipeline)
+### Batch path
 
-- **Schema:** Canonical lowercase fields (`title`, `author`, `read_status`, …).
-- **Input:** User CSV + JSON mapping config.
-- **Output:** In-memory ranked DataFrames; **not** auto-merged into `books.csv`.
-
-Both paths share `preprocess/normalize.py` and `ranking/score.py`. Column resolution accepts app and canonical names via `_resolve_column()`.
-
-Details: [pipeline.md](pipeline.md).
+- **Schema:** Canonical lowercase fields.
+- **Entry:** `backend/ingest/pipeline.py` — see [pipeline.md](pipeline.md).
 
 ---
 
-## Frontend architecture
+## Frontend
 
-Single client page (`frontend/app/page.tsx`) with three tabs: Library, Import, Discover.
-
-| Concern | Module |
-|---------|--------|
-| Production API URL | `frontend/lib/apiUrl.ts` — browser → Render |
-| Dev proxy target | `frontend/lib/backendUrl.ts` — Next route handlers → backend |
-| Upstream errors | `frontend/lib/upstreamError.ts` |
-
-Next.js `app/api/*/route.ts` handlers remain for **local development** (avoids CORS). Production uses direct fetch; backend CORS must allow `https://shelftxt.vercel.app`.
+| Module | Role |
+|--------|------|
+| `lib/apiUrl.ts` | Production browser → Render |
+| `lib/backendUrl.ts` | Dev Next.js proxy target |
+| `app/api/*/route.ts` | Dev-only same-origin proxy |
 
 Details: [frontend.md](frontend.md).
 
@@ -161,31 +166,31 @@ Details: [frontend.md](frontend.md).
 
 ## Cross-cutting concerns
 
-| Concern | Implementation |
-|---------|----------------|
-| **CORS** | `backend/api.py` — `localhost:3000`, `127.0.0.1:3000`, `shelftxt.onrender.com`, `shelftxt.vercel.app` |
-| **JSON safety** | `clean_for_json()` — NaN → `null` before DataFrame serialization |
-| **Title as key** | Updates/deletes match `Title` string equality; rename checks duplicates |
-| **Keep-warm** | `AsyncIOScheduler` pings `/health` every 14 min (Render free tier) |
-| **Legacy entrypoint** | Root `api.py` re-exports app for `uvicorn api:app` |
+| Concern | Where |
+|---------|--------|
+| CORS | `backend/api.py` |
+| JSON NaN → null | `routes/books.clean_for_json`, `services/recommendation.clean_for_json` |
+| Title as key | PATCH/DELETE by `Title` — [decisions.md](decisions.md#adr-004-title-string-as-primary-key) |
+| Recommendation cache | `@lru_cache` on `get_recommendation`; clear via `POST /recommend/refresh` |
+| Keep-warm | `AsyncIOScheduler` → `GET /health` every 14 min |
+| Legacy monolith | `backend/api_draft.py` — superseded by `backend/api.py`; do not use for new work |
 
 ---
 
-## Testing strategy
+## Testing
 
-| Suite | Scope |
-|-------|--------|
-| `tests/test_api.py` | HTTP contracts; persistence mocked at `backend.api` |
-| `tests/test_flexible_pipeline.py` | Ingest mapping, validation, ranking integration |
+| File | What it exercises |
+|------|-------------------|
+| `tests/test_api.py` | HTTP via `TestClient(backend.api.app)`; mock at route or `book_data` layer |
+| `tests/test_flexible_pipeline.py` | Ingest + ranking pipeline |
 
-No frontend automated tests yet. Manual smoke: library load, add book, recommend.
+When mocking after the refactor, patch where names are **used** (e.g. `backend.routes.books.load_data`, `backend.services.recommendation.get_recommendation`).
 
 ---
 
 ## Related docs
 
-- [deployment.md](deployment.md) — Render + Vercel runbook
-- [decisions.md](decisions.md) — Architecture decision records
-- [troubleshooting.md](troubleshooting.md) — Common failures
-- [contributing.md](contributing.md) — Conventions and PR checklist
 - [api.md](api.md) — REST reference
+- [deployment.md](deployment.md) — Render + Vercel
+- [decisions.md](decisions.md) — ADRs
+- [contributing.md](contributing.md) — layer rules

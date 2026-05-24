@@ -78,7 +78,9 @@ Does **not** use the Python flexible pipeline or mapping JSON.
 
 ## Discover tab
 
-`GET /api/recommend` → displays single suggested book or empty state.
+`apiUrl("/recommend")` → displays single suggested book or empty state.
+
+Backend caches the pick (`@lru_cache` on `get_recommendation`). Ops can clear via `POST /recommend/refresh` on the API.
 
 ## Types (client)
 

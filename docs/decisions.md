@@ -1,6 +1,6 @@
 # Architecture decisions
 
-Lightweight ADRs (Architecture Decision Records). Format: context → decision → consequences.
+Lightweight ADRs. Format: context → decision → consequences.
 
 ---
 
@@ -8,17 +8,11 @@ Lightweight ADRs (Architecture Decision Records). Format: context → decision �
 
 **Status:** Accepted
 
-**Context:** Solo project, small library size, no auth yet. Need simple persistence shared by API, CLI, and batch tools.
+**Context:** Solo project, small library, no auth yet.
 
-**Decision:** Store the live library in `backend/data/processed/books.csv`. Access only through `book_data.load_data()` / `save_data()`.
+**Decision:** Live library in `backend/data/processed/books.csv`. Low-level access via `book_data.py`; services/routes prefer `repository/books_repository.py`.
 
-**Consequences:**
-
-- (+) Zero infra cost, easy to inspect and backup
-- (+) Same file for API and CLI
-- (−) No concurrent-write safety beyond single-process assumption
-- (−) PaaS ephemeral disks can wipe data on redeploy
-- **Future:** Swap repository implementation; keep service interfaces stable
+**Consequences:** (+) Simple, portable (−) No concurrent-write safety; ephemeral disk on Render free tier.
 
 ---
 
@@ -26,33 +20,19 @@ Lightweight ADRs (Architecture Decision Records). Format: context → decision �
 
 **Status:** Accepted
 
-**Context:** One developer, one product. Deploy API and UI separately for hosting constraints, not organizational boundaries.
+**Decision:** Single repo: `backend/`, `frontend/`, `cli/`. Deploy API (Render) and UI (Vercel) separately.
 
-**Decision:** Single repo with `backend/`, `frontend/`, `cli/`. No Redis, queues, or service mesh.
-
-**Consequences:**
-
-- (+) One clone, one PR, shared docs
-- (+) Ranking code reused by API and batch pipeline
-- (−) Deploy config must respect monorepo roots (Render = repo root, Vercel = `frontend`)
+**Consequences:** (+) One PR, shared ranking code (−) Correct Root Directory per host required.
 
 ---
 
 ## ADR-003: Production API calls bypass Vercel proxy
 
-**Status:** Accepted (2026-05)
+**Status:** Accepted
 
-**Context:** Next.js `app/api/*` route handlers returned 404 on Vercel despite building locally. Root cause: monorepo root misconfiguration and/or serverless routing on static deploy.
+**Decision:** Production browser → Render via `apiUrl.ts`. Local dev → `/api/*` Next proxy.
 
-**Decision:** In production, the browser calls Render directly via `frontend/lib/apiUrl.ts`. Local dev keeps `/api/*` proxy through Next.js route handlers.
-
-**Consequences:**
-
-- (+) Reliable production connectivity
-- (+) Fewer serverless invocations on Vercel
-- (−) Requires CORS on FastAPI for `https://shelftxt.vercel.app`
-- (−) API URL baked into client bundle unless `NEXT_PUBLIC_API_BASE_URL` is set at build time
-- **Note:** `app/api/*/route.ts` retained for local dev; `vercel.json` rewrites kept as fallback
+**Consequences:** (+) Reliable on Vercel (−) CORS required for `shelftxt.vercel.app`.
 
 ---
 
@@ -60,31 +40,34 @@ Lightweight ADRs (Architecture Decision Records). Format: context → decision �
 
 **Status:** Accepted
 
-**Context:** Goodreads-style export uses `Title` as natural identifier. No user accounts yet.
+**Decision:** API matches books by exact `Title`.
 
-**Decision:** PATCH/DELETE match books by exact `Title`. Renames check for duplicates. `ISBN/UID` is stored but not used as API key.
-
-**Consequences:**
-
-- (+) Matches user mental model and CSV exports
-- (−) Fragile if titles change or duplicate titles exist
-- **Future:** Introduce stable `id` when multi-user or imports create collisions
+**Consequences:** (+) Matches CSV exports (−) Duplicate/renamed titles are fragile.
 
 ---
 
-## ADR-005: Incremental service-layer extraction
+## ADR-005: Layered backend (routes / services / repository)
 
-**Status:** In progress
+**Status:** Accepted (2026-05)
 
-**Context:** `backend/api.py` grew to include shelf state machine, CRUD, and HTTP concerns. Hard to test and extend.
+**Context:** Monolithic `api.py` mixed HTTP, shelf rules, and persistence.
 
-**Decision:** Extract use-cases into `backend/services/` one endpoint at a time. First: `GET /recommend` → `services/recommendation.py`. Keep `book_data.py` as repository; defer `routes/` and `schemas/` splits until patterns repeat.
+**Decision:**
+
+| Layer | Location |
+|-------|----------|
+| App shell | `backend/api.py` |
+| HTTP routes | `backend/routes/` |
+| Request models | `backend/schemas/` |
+| Business logic | `backend/services/` |
+| Persistence facade | `backend/repository/` → `book_data.py` |
 
 **Consequences:**
 
-- (+) Clear place for business logic without DI framework
-- (+) Tests mock at service or `backend.api` boundary
-- (−) Temporary duplication (`clean_for_json` in api + service) until consolidated
+- (+) Clear boundaries; routes stay thin where extracted
+- (+) `GET /recommend` isolated in `services/recommendation.py`
+- (−) Some shelf PATCH logic still in `routes/books.py` until moved to `services/books.py`
+- (−) `api_draft.py` kept temporarily as legacy reference — **do not extend**
 
 ---
 
@@ -92,27 +75,20 @@ Lightweight ADRs (Architecture Decision Records). Format: context → decision �
 
 **Status:** Accepted
 
-**Context:** UI import is JSON bulk add from client-parsed CSV. Power users need arbitrary CSV schemas with mapping config.
+**Decision:** Web `POST /books/import` (JSON) vs batch `ingest/pipeline.py` (mapping JSON).
 
-**Decision:**
+---
 
-- **App path:** `POST /books/import` — simple JSON, no mapping file
-- **Batch path:** `ingest/pipeline.py` — mapping JSON, validation, ranked output in memory
+## ADR-007: Cached recommendations
 
-**Consequences:**
+**Status:** Accepted
 
-- (+) Simple UX for web import
-- (+) Flexible batch analysis without coupling to live CSV
-- (−) Two behaviors to document and test
+**Decision:** `get_recommendation()` uses `@lru_cache(maxsize=1)`. `POST /recommend/refresh` clears cache after shelf changes (optional ops endpoint).
+
+**Consequences:** (+) Fewer repeated scoring runs (−) Stale pick until refresh or process restart.
 
 ---
 
 ## When to add a new ADR
 
-Add a short entry when you:
-
-- Change persistence, auth, or deployment topology
-- Introduce a new external dependency (DB, cache, worker)
-- Make a trade-off future contributors will question
-
-Keep entries to one screen. Link from PR descriptions when relevant.
+Persistence change, auth, new deploy target, or a trade-off future you will question.

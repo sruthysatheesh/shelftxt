@@ -3,7 +3,7 @@
 ## App persistence (`books.csv`)
 
 **Path:** `backend/data/processed/books.csv`  
-**Manager:** `backend/book_data.py`  
+**Manager:** `backend/book_data.py` (via `backend/repository/books_repository.py` in refactored code paths)  
 **Created:** Empty file with headers on first `load_data()` or `save_data()` call.
 
 ### Columns

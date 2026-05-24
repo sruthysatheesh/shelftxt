@@ -39,7 +39,8 @@ Developer reference for architecture, APIs, deployment, and operations.
 
 - Local API docs: http://127.0.0.1:8000/docs
 - Mapping template: [`backend/ingest/mapping.example.json`](../backend/ingest/mapping.example.json)
-- Persistence: [`backend/book_data.py`](../backend/book_data.py)
+- Persistence: [`backend/book_data.py`](../backend/book_data.py) · [`backend/repository/books_repository.py`](../backend/repository/books_repository.py)
+- Routes: [`backend/routes/`](../backend/routes/)
 - Render Blueprint: [`render.yaml`](../render.yaml)
 
 ---

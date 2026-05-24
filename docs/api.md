@@ -199,9 +199,23 @@ See [ranking.md](ranking.md) for algorithm details.
 
 ---
 
-## Pydantic models
+## `POST` `/recommend/refresh`
 
-Defined in `backend/api.py`:
+Clears the in-memory LRU cache for `get_recommendation()`.
+
+**Response 200**
+
+```json
+{ "status": "recommendation cache cleared" }
+```
+
+---
+
+## Schema reference (Pydantic)
+
+**Handlers:** `backend/routes/` · **Models:** `backend/schemas/books.py` · **App:** `backend/api.py`
+
+`backend/api_draft.py` is legacy — not loaded by `uvicorn backend.api:app`.
 
 | Model | Used by |
 |-------|---------|

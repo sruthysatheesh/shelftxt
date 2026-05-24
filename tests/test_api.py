@@ -12,8 +12,8 @@ class ApiTests(unittest.TestCase):
     def setUp(self):
         self.client = TestClient(api.app)
 
-    @patch("backend.api.save_data")
-    @patch("backend.api.load_data")
+    @patch("backend.routes.books.save_data")
+    @patch("backend.routes.books.load_data")
     def test_add_book_appends_new_tbr_row(self, mock_load_data, mock_save_data):
         base_df = pd.DataFrame(
             [
@@ -47,7 +47,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(saved_df.iloc[-1]["Authors"], "New Author")
         self.assertEqual(saved_df.iloc[-1]["Read Status"], "to-read")
 
-    @patch("backend.api.get_recommendation")
+    @patch("backend.routes.recommendation.get_recommendation")
     def test_recommend_returns_list_payload(self, mock_get_recommendation):
         mock_get_recommendation.return_value = [
             {
@@ -66,7 +66,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(payload[0]["Authors"], "Neal Stephenson")
         mock_get_recommendation.assert_called_once_with()
 
-    @patch("backend.api.get_recommendation")
+    @patch("backend.routes.recommendation.get_recommendation")
     def test_recommend_returns_empty_when_no_pick(self, mock_get_recommendation):
         mock_get_recommendation.return_value = []
 
@@ -75,9 +75,9 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.json(), [])
         mock_get_recommendation.assert_called_once_with()
 
-    @patch("backend.api.save_data")
-    @patch("backend.api.load_data")
-    def test_delete_book_removes_row(self, mock_load_data, mock_save_data):
+    @patch("backend.services.books.save_books")
+    @patch("backend.services.books.get_all_books")
+    def test_delete_book_removes_row(self, mock_get_all_books, mock_save_books):
         base_df = pd.DataFrame(
             [
                 {
@@ -104,19 +104,19 @@ class ApiTests(unittest.TestCase):
                 },
             ]
         )
-        mock_load_data.return_value = base_df
+        mock_get_all_books.return_value = base_df
 
         response = self.client.delete("/books?title=Remove")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "Book deleted"})
-        saved_df = mock_save_data.call_args.args[0]
+        saved_df = mock_save_books.call_args.args[0]
         self.assertEqual(len(saved_df), 1)
         self.assertEqual(saved_df.iloc[0]["Title"], "Keep")
 
-    @patch("backend.api.save_data")
-    @patch("backend.api.load_data")
-    def test_remove_via_post(self, mock_load_data, mock_save_data):
+    @patch("backend.services.books.save_books")
+    @patch("backend.services.books.get_all_books")
+    def test_remove_via_post(self, mock_get_all_books, mock_save_books):
         base_df = pd.DataFrame(
             [
                 {
@@ -132,16 +132,16 @@ class ApiTests(unittest.TestCase):
                 }
             ]
         )
-        mock_load_data.return_value = base_df
+        mock_get_all_books.return_value = base_df
 
         response = self.client.post("/books/remove", json={"title": "Gone"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "Book deleted"})
-        saved_df = mock_save_data.call_args.args[0]
+        saved_df = mock_save_books.call_args.args[0]
         self.assertEqual(len(saved_df), 0)
 
-    @patch("backend.api.save_data")
-    @patch("backend.api.load_data")
+    @patch("backend.routes.books.save_data")
+    @patch("backend.routes.books.load_data")
     def test_patch_move_to_dnf(self, mock_load_data, mock_save_data):
         base_df = pd.DataFrame(
             [
@@ -165,8 +165,8 @@ class ApiTests(unittest.TestCase):
         saved = mock_save_data.call_args.args[0]
         self.assertEqual(saved.iloc[0]["Read Status"], "dnf")
 
-    @patch("backend.api.save_data")
-    @patch("backend.api.load_data")
+    @patch("backend.routes.books.save_data")
+    @patch("backend.routes.books.load_data")
     def test_import_skips_duplicate_title(self, mock_load_data, mock_save_data):
         base_df = pd.DataFrame(
             [

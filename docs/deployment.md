@@ -23,7 +23,9 @@ Production split: **API on Render**, **UI on Vercel**. Both deploy from the same
 
 Alternative: leave Start Command empty and use root [`Procfile`](../Procfile).
 
-Legacy start command `uvicorn api:app` works via root [`api.py`](../api.py) shim.
+Legacy start command `uvicorn api:app` works via root [`api.py`](../api.py) shim (re-exports `backend.api`).
+
+Production entrypoint is always **`backend.api:app`** — not `backend.api_draft`.
 
 Optional Blueprint: [`render.yaml`](../render.yaml).
 

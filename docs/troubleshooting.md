@@ -138,11 +138,17 @@ git remote set-url origin https://github.com/tranguyeenn/shelftxt.git
 
 ## Tests
 
-### `AttributeError: module 'api' has no attribute 'normalize_rating'`
+### `AttributeError` or wrong status in API tests
 
-**Cause:** Tests patch old import paths after service extraction.
+**Cause:** Tests patch the wrong layer after the routes/services split.
 
-**Fix:** Patch where the name is bound, e.g. `backend.api.get_recommendation` or `backend.services.recommendation.load_data`.
+**Fix:** Use `TestClient(backend.api.app)` and patch where names are **used**:
+
+| Endpoint | Patch |
+|----------|--------|
+| Add / patch / import | `backend.routes.books.load_data`, `save_data` |
+| Delete / remove | `backend.services.books.get_all_books`, `save_books` |
+| Recommend | `backend.routes.recommendation.get_recommendation` |
 
 ---
 

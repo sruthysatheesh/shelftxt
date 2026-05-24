@@ -17,5 +17,5 @@ Developer-facing reference for architecture, APIs, data models, and pipelines.
 ## Quick links
 
 - Interactive API docs (when server is running): `http://127.0.0.1:8000/docs`
-- Mapping template: [`ingest/mapping.example.json`](../ingest/mapping.example.json)
-- Persistence layer: [`book_data.py`](../book_data.py)
+- Mapping template: [`backend/ingest/mapping.example.json`](../backend/ingest/mapping.example.json)
+- Persistence layer: [`backend/book_data.py`](../backend/book_data.py)

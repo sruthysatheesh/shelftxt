@@ -94,7 +94,7 @@ Requires FastAPI on port 8000 unless `API_BASE_URL` points elsewhere.
 
 ```bash
 # from repo root
-uvicorn api:app --reload
+uvicorn backend.api:app --reload
 ```
 
 Open `http://localhost:3000`.

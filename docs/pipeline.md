@@ -1,14 +1,14 @@
 # Flexible CSV pipeline
 
-Batch ingestion for arbitrary user CSV schemas. Used from Python (`ingest/pipeline.py`), not from the web Import tab (which posts JSON to `/books/import`).
+Batch ingestion for arbitrary user CSV schemas. Used from Python (`backend/ingest/pipeline.py`), not from the web Import tab (which posts JSON to `/books/import`).
 
 ## Entry points
 
 | Function | Module | Purpose |
 |----------|--------|---------|
-| `validate_uploaded_csv` | `ingest/pipeline.py` | Cheap gate before full processing |
-| `run_flexible_pipeline` | `ingest/pipeline.py` | Full validate → map → clean → rank |
-| `load_csv` | `ingest/load_csv.py` | Map columns + per-file validation |
+| `validate_uploaded_csv` | `backend/ingest/pipeline.py` | Cheap gate before full processing |
+| `run_flexible_pipeline` | `backend/ingest/pipeline.py` | Full validate → map → clean → rank |
+| `load_csv` | `backend/ingest/load_csv.py` | Map columns + per-file validation |
 
 ## Pipeline stages
 
@@ -60,7 +60,7 @@ Report shape:
 
 ## Mapping configuration
 
-Template: `ingest/mapping.example.json`
+Template: `backend/ingest/mapping.example.json`
 
 ### Keys
 
@@ -125,7 +125,7 @@ Configs merge with `DEFAULT_MAPPING_CONFIG` in `load_csv.py` (LibroRank export h
 ### Full pipeline
 
 ```python
-from ingest.pipeline import run_flexible_pipeline
+from backend.ingest.pipeline import run_flexible_pipeline
 
 result = run_flexible_pipeline(
     "data/raw/my_export.csv",
@@ -149,14 +149,14 @@ else:
 ### Validation only
 
 ```python
-from ingest.pipeline import validate_uploaded_csv
+from backend.ingest.pipeline import validate_uploaded_csv
 
 report = validate_uploaded_csv("upload.csv", mapping_config={...})
 ```
 
 ## `clean_books` behavior
 
-`preprocess/clean_books.py`:
+`backend/preprocess/clean_books.py`:
 
 - Ensures all canonical columns exist
 - Lowercases and strips `read_status`
@@ -166,6 +166,6 @@ report = validate_uploaded_csv("upload.csv", mapping_config={...})
 
 ## Tests
 
-`test/test_flexible_pipeline.py` — validation gates, mapping, ranking integration.
+`tests/test_flexible_pipeline.py` — validation gates, mapping, ranking integration.
 
 Run: `./venv/bin/python -m unittest discover -s test -v`

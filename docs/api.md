@@ -199,7 +199,7 @@ See [ranking.md](ranking.md) for algorithm details.
 
 ## Pydantic models
 
-Defined in `api.py`:
+Defined in `backend/api.py`:
 
 | Model | Used by |
 |-------|---------|

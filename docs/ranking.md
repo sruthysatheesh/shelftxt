@@ -1,6 +1,6 @@
 # Ranking
 
-Scoring lives in `ranking/score.py`. Normalization prerequisites live in `preprocess/normalize.py`.
+Scoring lives in `backend/ranking/score.py`. Normalization prerequisites live in `backend/preprocess/normalize.py`.
 
 ## Feature normalization
 

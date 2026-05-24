@@ -2,8 +2,8 @@
 
 ## App persistence (`books.csv`)
 
-**Path:** `data/processed/books.csv`  
-**Manager:** `book_data.py`  
+**Path:** `backend/data/processed/books.csv`  
+**Manager:** `backend/book_data.py`  
 **Created:** Empty file with headers on first `load_data()` or `save_data()` call.
 
 ### Columns
@@ -52,7 +52,7 @@ Implementation: `shelfLabel()` in `frontend/app/page.tsx`.
 
 ## Canonical schema (batch pipeline)
 
-Used by `ingest/load_csv.py` and downstream preprocess/rank steps.
+Used by `backend/ingest/load_csv.py` and downstream preprocess/rank steps.
 
 | Field | Required | Default |
 |-------|----------|---------|
@@ -72,7 +72,7 @@ Other values trigger a **warning** in validation, not a hard reject.
 
 ## Mapping between schemas
 
-Default mapping in `ingest/load_csv.py` bridges LibroRank’s own export format to canonical:
+Default mapping in `backend/ingest/load_csv.py` bridges LibroRank’s own export format to canonical:
 
 | App / export column | Canonical field |
 |---------------------|-----------------|
@@ -88,7 +88,7 @@ User uploads supply custom `column_mappings` (see [pipeline.md](pipeline.md)).
 
 ## Derived features (not stored in CSV)
 
-Computed at ranking time in `preprocess/normalize.py`:
+Computed at ranking time in `backend/preprocess/normalize.py`:
 
 | Field | Description |
 |-------|-------------|

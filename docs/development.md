@@ -33,13 +33,13 @@ Use the project venv so dependencies (e.g. `apscheduler`) are on the path:
 
 ```bash
 source .venv/bin/activate
-uvicorn api:app --reload
+uvicorn backend.api:app --reload
 ```
 
 Or without activating:
 
 ```bash
-.venv/bin/uvicorn api:app --reload
+.venv/bin/uvicorn backend.api:app --reload
 ```
 
 - http://127.0.0.1:8000
@@ -60,25 +60,25 @@ cd frontend && npm install && npm run dev
 python -m cli.manage_books
 ```
 
-Interactive menu: mark finished, mark DNF, add TBR. Shares `data/processed/books.csv` with the API.
+Interactive menu: mark finished, mark DNF, add TBR. Shares `backend/data/processed/books.csv` with the API.
 
 ## Tests
 
 ```bash
-./venv/bin/python -m unittest discover -s test -v
+./.venv/bin/python -m unittest discover -s tests -v
 ```
 
 | File | Coverage |
 |------|----------|
-| `test/test_api.py` | FastAPI routes (mocked persistence) |
-| `test/test_flexible_pipeline.py` | Ingest, validation, ranking |
+| `tests/test_api.py` | FastAPI routes (mocked persistence) |
+| `tests/test_flexible_pipeline.py` | Ingest, validation, ranking |
 
 ## Data directories
 
 | Path | Git | Purpose |
 |------|-----|---------|
-| `data/raw/` | tracked (`.gitkeep`) | Optional staging for user CSV exports |
-| `data/processed/books.csv` | gitignored | Live library file |
+| `backend/data/raw/` | tracked (`.gitkeep`) | Optional staging for user CSV exports |
+| `backend/data/processed/books.csv` | gitignored | Live library file |
 
 First API/CLI access creates an empty `books.csv` with correct headers.
 
@@ -102,12 +102,12 @@ API_BASE_URL=https://your-api.example.com
 **Procfile:**
 
 ```txt
-web: uvicorn api:app --host 0.0.0.0 --port $PORT
+web: uvicorn backend.api:app --host 0.0.0.0 --port $PORT
 ```
 
-**Keep-warm:** `api.py` lifespan starts `AsyncIOScheduler` pinging `https://librorank.onrender.com/health` every 14 minutes. Update the URL if you deploy under a different hostname.
+**Keep-warm:** `backend/api.py` lifespan starts `AsyncIOScheduler` pinging `https://librorank.onrender.com/health` every 14 minutes. Update the URL if you deploy under a different hostname.
 
-**CORS origins** in `api.py`: localhost dev hosts + production frontend URL.
+**CORS origins** in `backend/api.py`: localhost dev hosts + production frontend URL.
 
 ### Persistence warning
 
@@ -116,17 +116,21 @@ Free/ephemeral disks on PaaS may reset `books.csv` on redeploy or spin-down. For
 ## Project layout (reference)
 
 ```txt
-libroRank/
-├── api.py
-├── book_data.py
-├── ingest/
-├── preprocess/
-├── ranking/
+shelftxt/
+├── backend/
+│   ├── api.py
+│   ├── book_data.py
+│   ├── routes/
+│   ├── services/
+│   ├── schemas/
+│   ├── preprocess/
+│   ├── ranking/
+│   ├── ingest/
+│   └── data/
 ├── cli/
-├── test/
+├── tests/
 ├── frontend/
-├── data/
-├── docs/          ← this folder
+├── docs/
 └── Procfile
 ```
 

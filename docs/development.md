@@ -109,6 +109,8 @@ API_BASE_URL=https://your-api.example.com
 | **Build Command** | `pip install -r requirements.txt` |
 | **Start Command** | `uvicorn backend.api:app --host 0.0.0.0 --port $PORT` |
 
+(`uvicorn api:app` also works via the root `api.py` shim if your Render service still uses the old command.)
+
 Or rely on the root `Procfile` (same start command) with an empty Root Directory.
 
 **`ModuleNotFoundError: requirements.txt` during build** — Root Directory is set to a subfolder (e.g. `backend` or `frontend`). Clear it and redeploy.

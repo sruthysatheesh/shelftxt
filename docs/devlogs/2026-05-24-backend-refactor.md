@@ -92,6 +92,8 @@ Documented in [deployment.md](../deployment.md) and [troubleshooting.md](../trou
 - [ ] Add devlog entry when persistence moves off ephemeral CSV (Postgres or similar)
 - [ ] Optional: wire frontend to call `POST /recommend/refresh` after shelf mutations
 
+See also: [Refactor backlog](../architecture/system-overview.md#refactor-backlog) in system overview.
+
 ---
 
 ## Related docs

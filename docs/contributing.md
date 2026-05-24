@@ -1,81 +1,98 @@
 # Contributing
 
-Conventions for the Shelftxt monorepo.
+How to work on ShelfTxt — setup, workflow, and what we expect in changes.  
+For **where code lives**, see [architecture/system-overview.md](architecture/system-overview.md). For **why** structural choices were made, see [decisions.md](decisions.md).
 
 ---
 
-## Prerequisites
+## Before you start
 
-Python 3.14+, Node.js 20+, Git. Setup: [development.md](development.md).
+1. Complete local setup: [development.md](development.md)
+2. Skim the folder map: [architecture/system-overview.md](architecture/system-overview.md)
+3. If you are changing behavior users see, check [api.md](api.md) for public paths
 
----
-
-## Backend layer rules
-
-```text
-routes/  →  services/  →  repository/  →  book_data.py  →  CSV
-                ↘  preprocess/ , ranking/  (algorithms, no I/O)
-```
-
-| Layer | Do | Don't |
-|-------|-----|--------|
-| `routes/` | HTTP, call services, use `schemas/` | Shelf algorithms, direct CSV rules long-term |
-| `services/` | Orchestration, `HTTPException` for business rules | Import FastAPI routers |
-| `repository/` | `get_all_books`, `save_books` | Ranking or PATCH branching |
-| `book_data.py` | CSV path, columns, load/save | HTTP or shelf logic |
-| `schemas/` | Pydantic models only | Business logic |
-
-**Imports:** `from backend.routes.books import ...`, never `from book_data` without package prefix.
+This is a solo-friendly repo — there is no heavy review process. These guidelines still help future-you and anyone reading the history.
 
 ---
 
-## Frontend
+## Workflow
 
-- Browser fetches: `apiUrl("/books")` etc. in `page.tsx`
-- Do not hardcode Render URL in components
-- Dev proxy: `app/api/*/route.ts` + `backendUrl.ts`
+1. **Branch** from `main` (or work directly on `main` if you are the only contributor).
+2. **Keep diffs focused** — one feature or refactor per change set when possible.
+3. **Run tests** before pushing:
 
----
+   ```bash
+   ./.venv/bin/python -m unittest discover -s tests -v
+   ```
 
-## Tests
-
-```bash
-./.venv/bin/python -m unittest discover -s tests -v
-```
-
-| Test file | App entry | Mock targets (examples) |
-|-----------|-----------|-------------------------|
-| `test_api.py` | `backend.api.app` | `backend.routes.books.load_data`, `backend.services.recommendation.get_recommendation` |
-| `test_flexible_pipeline.py` | — | `backend.ingest.*` |
-
-Patch where the name is **looked up**, not where it is defined.
+4. **Update docs** when you change API paths, deploy steps, or project layout (see [Documentation](#documentation) below).
+5. **Push** and deploy Render/Vercel if the change affects production.
 
 ---
 
 ## Pull request checklist
 
-- [ ] Tests pass
-- [ ] No secrets or `books.csv` in diff
-- [ ] Public paths unchanged (`/recommend`, `/books`, …) or documented in `api.md`
-- [ ] Docs updated for behavior or layout changes
+Use this even for self-review before merge:
+
+- [ ] `./.venv/bin/python -m unittest discover -s tests -v` passes
+- [ ] No secrets, API keys, or `backend/data/processed/books.csv` in the diff
+- [ ] Public API paths unchanged (`/books`, `/recommend`, …) **or** [api.md](api.md) updated
+- [ ] Relevant docs updated (see table below)
+- [ ] Scope is minimal — no drive-by refactors unrelated to the task
 
 ---
 
-## Refactor status
+## Code conventions (short)
 
-| Area | Status |
-|------|--------|
-| App shell + routers | Done — `backend/api.py` |
-| Schemas | Done — `schemas/books.py` |
-| `GET /recommend` | Done — `services/recommendation.py` |
-| Delete book | Partial — `services/books.delete_book_by_title` |
-| Add / import / PATCH shelf | In `routes/books.py` → move to `services/books.py` when touched |
-| Remove `api_draft.py` | Pending — after tests target `backend.api` only |
+**Do**
+
+- Match naming and import style in the file you are editing
+- Put new business logic in `backend/services/`, not in route handlers
+- Use `from backend.X import Y` (repo root is on the Python path)
+- Use `apiUrl()` in the frontend — do not hardcode production API URLs in components
+
+**Don't**
+
+- Commit `.env.local`, venvs, or personal CSV libraries
+- Add frameworks (DI containers, extra abstractions) without a concrete need
+- Expand scope “while you’re here” unless you log it in a [devlog](devlogs/)
+
+Full layer rules: [architecture/system-overview.md#backend-layer-rules](architecture/system-overview.md#backend-layer-rules).
+
+---
+
+## Documentation
+
+| If you changed… | Update… |
+|-----------------|---------|
+| API request/response or paths | [api.md](api.md) |
+| Deploy / env vars | [deployment.md](deployment.md) |
+| Folder responsibilities | [architecture/system-overview.md](architecture/system-overview.md) |
+| Non-obvious trade-off | [decisions.md](decisions.md) or a new [devlog](devlogs/) entry |
+| Refactor or incident worth remembering | [DEVLOG.md](../DEVLOG.md) + `docs/devlogs/YYYY-MM-DD-*.md` |
+| “It broke and we fixed it” | [troubleshooting.md](troubleshooting.md) |
+
+---
+
+## Commit messages
+
+Prefer imperative, scoped summaries:
+
+```txt
+Extract delete book into services/books.py
+Fix Vercel production fetch via apiUrl helper
+Document Render monorepo root directory
+```
 
 ---
 
 ## Related
 
-- [architecture.md](architecture.md)
-- [decisions.md](decisions.md)
-- [troubleshooting.md](troubleshooting.md)
+| Doc | Use when |
+|-----|----------|
+| [development.md](development.md) | Install, run locally, CLI |
+| [architecture/system-overview.md](architecture/system-overview.md) | Where to put code |
+| [architecture.md](architecture.md) | Diagrams, data paths, production topology |
+| [decisions.md](decisions.md) | ADRs |
+| [troubleshooting.md](troubleshooting.md) | Tests failing, deploy errors |
+| [DEVLOG.md](../DEVLOG.md) | Engineering timeline |

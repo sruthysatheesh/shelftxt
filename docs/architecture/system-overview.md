@@ -102,6 +102,55 @@ Used by both the live recommendation path and the batch ingest pipeline.
 
 ---
 
+## Backend layer rules
+
+```text
+routes/  →  services/  →  repository/  →  book_data.py  →  CSV
+                ↘  preprocess/ , ranking/  (algorithms, no I/O)
+```
+
+| Layer | Do | Don't |
+|-------|-----|--------|
+| `routes/` | HTTP, call services, use `schemas/` | Shelf algorithms, direct CSV rules long-term |
+| `services/` | Orchestration, `HTTPException` for business rules | Import FastAPI routers |
+| `repository/` | `get_all_books`, `save_books` | Ranking or PATCH branching |
+| `book_data.py` | CSV path, columns, load/save | HTTP or shelf logic |
+| `schemas/` | Pydantic models only | Business logic |
+
+**Imports:** `from backend.routes.books import ...` — always use the `backend.` package prefix.
+
+---
+
+## Testing notes
+
+```bash
+./.venv/bin/python -m unittest discover -s tests -v
+```
+
+| Test file | App entry | Mock where used (examples) |
+|-----------|-----------|----------------------------|
+| `test_api.py` | `backend.api.app` | `backend.routes.books.load_data`, `backend.services.books.get_all_books`, `backend.routes.recommendation.get_recommendation` |
+| `test_flexible_pipeline.py` | — | `backend.ingest.*` |
+
+Patch where the name is **looked up** in the module under test, not where it is defined. See [troubleshooting.md](../troubleshooting.md#tests).
+
+---
+
+## Refactor backlog
+
+Tracked here for visibility — not a contribution checklist. Log completed work in [DEVLOG.md](../../DEVLOG.md).
+
+| Area | Status |
+|------|--------|
+| App shell + routers | Done — `backend/api.py` |
+| Schemas | Done — `schemas/books.py` |
+| `GET /recommend` | Done — `services/recommendation.py` |
+| Delete book | Partial — `services/books.delete_book_by_title` |
+| Add / import / PATCH shelf | In `routes/books.py` → move to `services/books.py` |
+| Remove `api_draft.py` | Pending |
+
+---
+
 ## `frontend/`
 
 **Purpose:** Single-page Next.js app — library shelves, CSV import, discover tab.

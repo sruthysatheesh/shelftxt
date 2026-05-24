@@ -195,4 +195,4 @@ When mocking after the refactor, patch where names are **used** (e.g. `backend.r
 - [api.md](api.md) — REST reference
 - [deployment.md](deployment.md) — Render + Vercel
 - [decisions.md](decisions.md) — ADRs
-- [contributing.md](contributing.md) — layer rules
+- [architecture/system-overview.md](architecture/system-overview.md) — layer rules, testing notes, refactor backlog

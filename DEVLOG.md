@@ -32,4 +32,6 @@ This file is the **index**. Detailed entries live in [`docs/devlogs/`](docs/devl
 3. Add a row to the **Major entries** table above.
 4. Optionally add a one-line bullet under **Recent refactors**.
 
+**Open refactor backlog:** [system-overview.md → Refactor backlog](docs/architecture/system-overview.md#refactor-backlog)
+
 See also: [Architecture overview](docs/architecture/system-overview.md) · [Technical docs index](docs/README.md)

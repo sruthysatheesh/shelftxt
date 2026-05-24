@@ -20,7 +20,7 @@ Developer reference for architecture, APIs, deployment, and operations.
 | [deployment.md](deployment.md) | Render + Vercel runbook, env vars, verification |
 | [decisions.md](decisions.md) | Architecture decision records (ADRs) |
 | [development.md](development.md) | Local setup, tests, CLI |
-| [contributing.md](contributing.md) | Conventions, PR checklist, refactor roadmap |
+| [contributing.md](contributing.md) | How to contribute — workflow, PR checklist |
 | [troubleshooting.md](troubleshooting.md) | Common errors and fixes |
 
 ## Engineering notes
@@ -60,7 +60,7 @@ Developer reference for architecture, APIs, deployment, and operations.
 |------|------------|
 | First time cloning | [development.md](development.md) |
 | Deploy or fix prod | [deployment.md](deployment.md) → [troubleshooting.md](troubleshooting.md) |
-| Add an API endpoint | [architecture.md](architecture.md) → [contributing.md](contributing.md) → [api.md](api.md) |
+| Add an API endpoint | [architecture/system-overview.md](architecture/system-overview.md) → [contributing.md](contributing.md) → [api.md](api.md) |
 | Change scoring | [ranking.md](ranking.md) → [decisions.md](decisions.md) if trade-off is non-obvious |
 | Import / batch CSV | [pipeline.md](pipeline.md) |
 | Understand a past refactor | [../DEVLOG.md](../DEVLOG.md) → [devlogs/](devlogs/) |

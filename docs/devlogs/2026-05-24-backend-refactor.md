@@ -1,4 +1,4 @@
-# Refactoring ShelfTxt Backend
+# Refactoring shelftxt backend
 
 | | |
 |---|---|
@@ -15,7 +15,7 @@
 
 ## Context
 
-ShelfTxt started as a single-file FastAPI app: routes, Pydantic schemas, shelf state machine, and recommendation pipeline all lived in one module. That worked for a solo prototype but became friction when:
+Shelftxt started as a single-file FastAPI app: routes, Pydantic schemas, shelf state machine, and recommendation pipeline all lived in one module. That worked for a solo prototype but became friction when:
 
 1. **Recommendation logic was buried in a route** — changing scoring or empty-state behavior meant editing HTTP code.
 2. **Render free tier felt unstable** — cold starts, deploy config mistakes (wrong Root Directory, old `uvicorn api:app` entrypoint), and an overloaded “do everything” API module made incidents harder to isolate.

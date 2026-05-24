@@ -1,6 +1,6 @@
 # Devlogs
 
-Engineering journal for ShelfTxt. One file per significant change, incident, or refactor.
+Engineering journal for shelftxt. One file per significant change, incident, or refactor.
 
 ---
 

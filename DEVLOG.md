@@ -1,4 +1,4 @@
-# ShelfTxt Devlog
+# Shelftxt devlog
 
 ## Purpose
 
@@ -12,7 +12,7 @@ This file is the **index**. Detailed entries live in [`docs/devlogs/`](docs/devl
 
 | Date | Title | Summary |
 |------|-------|---------|
-| 2026-05-24 | [Refactoring ShelfTxt Backend](docs/devlogs/2026-05-24-backend-refactor.md) | Layered backend: routes, services, repository; recommendation extracted from monolithic API; Render + Vercel deploy fixes |
+| 2026-05-24 | [Refactoring shelftxt backend](docs/devlogs/2026-05-24-backend-refactor.md) | Layered backend: routes, services, repository; recommendation extracted from monolithic API; Render + Vercel deploy fixes |
 
 ---
 

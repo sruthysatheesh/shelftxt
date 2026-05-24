@@ -1,128 +1,101 @@
-# Working on ShelfTxt
+# Contributing to shelftxt
 
-ShelfTxt is a solo-maintained project. Contributions and forks are welcome, but expect a lightweight review pace. Small, focused changes beat large rewrites every time.
+Thanks for helping improve an open-source reading backend. Keep changes focused and documented.
 
 ---
 
-## Setup
+## Clone the repository
+
+```bash
+git clone https://github.com/tranguyeenn/shelftxt.git
+cd shelftxt
+```
+
+Fork the repo on GitHub and clone your fork if you prefer working from a branch on your account.
+
+---
+
+## Virtual environment
 
 From the repo root:
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+```
+
+Use Python 3.12+ (see `requirements.txt`). Always activate the venv before installing or running commands.
+
+---
+
+## Install requirements
+
+```bash
 pip install -r requirements.txt
+```
+
+---
+
+## Run FastAPI locally
+
+```bash
 uvicorn backend.api:app --reload
 ```
 
-Frontend (optional):
+- API: http://127.0.0.1:8000  
+- Interactive docs: http://127.0.0.1:8000/docs  
 
-```bash
-cd frontend && npm install && npm run dev
-```
+Legacy entrypoint: `uvicorn api:app --reload` (root shim).
 
-Full details: [docs/development.md](docs/development.md)
-
-Run Python commands from the **repo root** so `backend` resolves as a package.
+Optional UI: `cd frontend && npm install && npm run dev` — see [docs/development.md](docs/development.md).
 
 ---
 
-## Architecture docs
+## Coding style expectations
 
-Before moving code around, skim:
+- Match naming and import style in the file you edit (`from backend.X import Y` from repo root).
+- Put business logic in `backend/services/`, not in route handlers.
+- Do not commit `.venv/`, `.env*`, `frontend/.env.local`, or `backend/data/processed/books.csv`.
+- Avoid new frameworks or extra abstraction layers without a concrete need.
+- Update [docs/api.md](docs/api.md) when public paths or payloads change.
+- Prefer small, reviewable diffs over large rewrites.
 
-| Doc | Use when |
-|-----|----------|
-| [docs/architecture/system-overview.md](docs/architecture/system-overview.md) | Where files belong (`routes/`, `services/`, …) |
-| [docs/architecture.md](docs/architecture.md) | Layers, data flow, production topology |
-| [docs/decisions.md](docs/decisions.md) | Why structural choices were made |
-
-New business logic belongs in `backend/services/`, not in route handlers.
-
----
-
-## Self-review checklist
-
-Before you push or open a PR:
-
-- [ ] `python -m unittest discover -s tests -v` passes
-- [ ] No secrets, `.env*`, or personal `books.csv` in the diff
-- [ ] Public API paths unchanged **or** [docs/api.md](docs/api.md) updated
-- [ ] Scope is one logical change — no unrelated drive-by refactors
-- [ ] You read the layer rules in [system-overview](docs/architecture/system-overview.md#backend-layer-rules)
-
-GitHub also provides a [pull request template](.github/PULL_REQUEST_TEMPLATE.md) with the same ideas.
+Architecture map: [docs/architecture/system-overview.md](docs/architecture/system-overview.md).
 
 ---
 
-## Testing
+## Pull request guidelines
 
-```bash
-source .venv/bin/activate   # if not already active
-python -m unittest discover -s tests -v
-```
+1. Branch from `main` (or your fork’s default branch).
+2. Run tests before opening a PR:
 
-Covers FastAPI routes (mocked persistence) and the flexible ingest pipeline. CI runs the same command on push and pull requests.
+   ```bash
+   python -m unittest discover -s tests -v
+   ```
 
----
+3. Use the [pull request template](.github/PULL_REQUEST_TEMPLATE.md) checklist.
+4. Describe what changed and why; link related issues when applicable.
+5. Update docs if behavior, deploy steps, or layout changed.
 
-## Documentation expectations
-
-| If you changed… | Update… |
-|-----------------|---------|
-| API paths or payloads | [docs/api.md](docs/api.md) |
-| Deploy / env vars | [docs/deployment.md](docs/deployment.md) |
-| Folder layout | [docs/architecture/system-overview.md](docs/architecture/system-overview.md) |
-| Non-obvious trade-off | [docs/decisions.md](docs/decisions.md) or a [devlog](docs/devlogs/) |
-| Refactor worth remembering | [DEVLOG.md](DEVLOG.md) + dated entry under `docs/devlogs/` |
-| User-visible bug fix pattern | [docs/troubleshooting.md](docs/troubleshooting.md) |
-
-Not every typo needs a devlog — use judgment.
+This is a solo-maintained project — review may take time. Large changes benefit from a prior [feature request](.github/ISSUE_TEMPLATE/feature_request.md) or issue discussion.
 
 ---
 
-## Code conventions
+## Issue reporting
 
-**Do**
+| Type | Template |
+|------|----------|
+| Bug | [.github/ISSUE_TEMPLATE/bug_report.md](.github/ISSUE_TEMPLATE/bug_report.md) |
+| Feature | [.github/ISSUE_TEMPLATE/feature_request.md](.github/ISSUE_TEMPLATE/feature_request.md) |
 
-- Match naming and import style in the file you edit
-- Use `from backend.X import Y` from repo root
-- Use `apiUrl()` in the frontend — no hardcoded production API URLs
+Include reproduction steps, expected vs actual behavior, and environment (local vs production, Python version).
 
-**Don't**
-
-- Commit venvs, `.env.local`, or `backend/data/processed/books.csv`
-- Add abstractions (DI frameworks, extra layers) without a concrete need
-- Expand scope “while you’re here” without logging it in a devlog
-
-More detail: [docs/contributing.md](docs/contributing.md) (workflow, commit message style).
-
----
-
-## Solo-maintained repo
-
-One maintainer handles merges, deploys, and triage. That means:
-
-- Issues and PRs may sit for a while — not a sign of rejection
-- Large redesigns are unlikely to merge without prior discussion
-- Breaking changes need a clear reason and doc updates
-
-If you are unsure whether an idea fits, open a [feature request](.github/ISSUE_TEMPLATE/feature_request.md) first.
-
----
-
-## Contribution philosophy
-
-**Small focused changes > massive rewrites.**
-
-Prefer incremental PRs: one endpoint moved to services, one ranking tweak, one doc fix. Big-bang refactors are hard to review alone and easy to regress.
-
-Readable history matters more than perfect architecture on the first try. Ship the minimal fix, document the trade-off, iterate.
+**Security:** Do not file public issues for vulnerabilities. See [SECURITY.md](SECURITY.md).
 
 ---
 
 ## Related
 
-- [ROADMAP.md](ROADMAP.md) — planned directions
-- [CHANGELOG.md](CHANGELOG.md) — release notes
-- [docs/opensource.md](docs/opensource.md) — why this project is open source
-- [SECURITY.md](SECURITY.md) — report vulnerabilities privately
+- [ROADMAP.md](ROADMAP.md)
+- [docs/contributing.md](docs/contributing.md) — extra workflow and doc-update table
+- [docs/troubleshooting.md](docs/troubleshooting.md)

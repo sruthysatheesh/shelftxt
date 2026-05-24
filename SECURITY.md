@@ -1,46 +1,32 @@
 # Security Policy
 
-## Please report privately
+## Report privately
 
-**Do not open public GitHub issues** for:
-
-- Security vulnerabilities (injection, auth bypass, data exposure, etc.)
-- Exposed secrets or API keys found in the repo or deployments
-- Authentication or session issues that could affect users
-
-Public issues make it easier for others to exploit problems before a fix is ready.
+**Do not open public GitHub issues** for security vulnerabilities, exposed secrets, or authentication problems. Public reports can be exploited before a fix is available.
 
 ## Contact
 
 Email: **tranguyeenn2007@gmail.com**
 
-Please include **`[ShelfTxt Security]`** in the subject line so the report is easy to find.
+Include **`[shelftxt Security]`** in the subject line.
 
 Example:
 
 ```txt
-[ShelfTxt Security] Exposed API key in deployment config
+[shelftxt Security] Exposed API key in deployment config
 ```
 
 ## What to include
 
-When possible:
-
 - What you found and where (URL, file path, commit)
 - Steps to reproduce
-- Impact you believe it has
-- Your timezone if you are open to follow-up questions
-
-You should receive an acknowledgment within a reasonable timeframe. Critical issues will be prioritized.
+- Estimated impact
+- Whether you are available for follow-up
 
 ## Scope
 
-ShelfTxt is a personal library app with a CSV-backed API and hosted frontend. Reports about misconfiguration on your own fork, or social engineering, are still welcome but may be out of scope for this repo.
+Shelftxt is a CSV-backed library API with a hosted frontend. Reports about your own fork misconfiguration may be out of scope but are still welcome.
 
-## Safe harbor
+Good-faith research that avoids harming users or data will not be treated as hostile. Do not test production without permission.
 
-Good-faith security research that avoids harming users or destroying data will not be pursued as hostile action. Please do not test against production without permission.
-
-## Supported versions
-
-Security fixes apply to the default branch (`main`) and the live deployment described in [docs/deployment.md](docs/deployment.md). Older forks are unsupported.
+Fixes apply to the default branch (`main`) and deployments described in [docs/deployment.md](docs/deployment.md).

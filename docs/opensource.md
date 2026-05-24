@@ -1,6 +1,6 @@
-# Open source at ShelfTxt
+# Open source at shelftxt
 
-ShelfTxt is open source because reading tools should be inspectable, forkable, and affordable to run — not locked behind opaque algorithms or paid walls.
+Shelftxt is open source because reading tools should be inspectable, forkable, and affordable to run — not locked behind opaque algorithms or paid walls.
 
 ---
 
@@ -17,7 +17,7 @@ MIT license: see [LICENSE](../LICENSE).
 
 ## Mission: reading accessibility
 
-ShelfTxt exists to make **reading more accessible and less overwhelming**:
+Shelftxt exists to make **reading more accessible and less overwhelming**:
 
 - Organize shelves without a subscription
 - Reduce decision fatigue with ranked suggestions from *your* list

@@ -1,6 +1,6 @@
 # System overview
 
-High-level map of the ShelfTxt codebase. For production topology and ADRs, see [architecture.md](../architecture.md) and [decisions.md](../decisions.md).
+High-level map of the shelftxt codebase. For production topology and ADRs, see [architecture.md](../architecture.md) and [decisions.md](../decisions.md).
 
 ---
 

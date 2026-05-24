@@ -99,6 +99,24 @@ API_BASE_URL=https://your-api.example.com
 
 ## Deployment (Render)
 
+### Python API service settings
+
+`requirements.txt` and `Procfile` live at the **repo root**. After the `backend/` refactor, Render must **not** use `backend` or `frontend` as Root Directory for the API.
+
+| Setting | Value |
+|---------|-------|
+| **Root Directory** | *(leave empty)* |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `uvicorn backend.api:app --host 0.0.0.0 --port $PORT` |
+
+Or rely on the root `Procfile` (same start command) with an empty Root Directory.
+
+**`ModuleNotFoundError: requirements.txt` during build** — Root Directory is set to a subfolder (e.g. `backend` or `frontend`). Clear it and redeploy.
+
+**Frontend on Render** is a separate service: Root Directory = `frontend`, build = `npm install && npm run build`, start = `npm start` (or your Next.js start command). Do not use `pip install -r requirements.txt` on the frontend service.
+
+Optional: [`render.yaml`](../render.yaml) at repo root documents the API service for Blueprint deploys.
+
 **Procfile:**
 
 ```txt

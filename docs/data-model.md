@@ -72,7 +72,7 @@ Other values trigger a **warning** in validation, not a hard reject.
 
 ## Mapping between schemas
 
-Default mapping in `backend/ingest/load_csv.py` bridges LibroRank’s own export format to canonical:
+Default mapping in `backend/ingest/load_csv.py` bridges ShelfTxt’s own export format to canonical:
 
 | App / export column | Canonical field |
 |---------------------|-----------------|

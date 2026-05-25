@@ -7,7 +7,7 @@ const lora = Lora({ subsets: ["latin"], variable: "--font-serif" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "LibroRank",
+  title: "ShelfTxt",
   description: "Shelves, recommendations, and CSV import for your reading list",
   icons: {
     icon: [{ url: "/app-icon-mono.svg", type: "image/svg+xml" }],

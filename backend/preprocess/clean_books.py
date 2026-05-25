@@ -4,7 +4,7 @@ import random
 
 def clean_books(df):
     """
-    Clean canonical LibroRank columns while gracefully handling missing fields.
+    Clean canonical ShelfTxt columns while gracefully handling missing fields.
     """
     df = df.copy()
 

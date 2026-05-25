@@ -31,7 +31,7 @@ Override with `NEXT_PUBLIC_API_BASE_URL` (prod) or `API_BASE_URL` (dev proxy).
 **Response 200**
 
 ```json
-{ "status": "healthy", "service": "LibroRank" }
+{ "status": "healthy", "service": "ShelfTxt" }
 ```
 
 Used by Render keep-warm scheduler (see [deployment.md](deployment.md)).

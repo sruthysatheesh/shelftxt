@@ -73,7 +73,7 @@ Template: `backend/ingest/mapping.example.json`
 
 `column_mappings` keys are **source headers**; values are **canonical** names (`title`, `author`, …).
 
-Configs merge with `DEFAULT_MAPPING_CONFIG` in `load_csv.py` (LibroRank export headers).
+Configs merge with `DEFAULT_MAPPING_CONFIG` in `load_csv.py` (ShelfTxt export headers).
 
 ### Example
 

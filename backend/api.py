@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
 # -----------------------------
 
 app = FastAPI(
-    title="LibroRank API",
+    title="ShelfTxt API",
     lifespan=lifespan
 )
 

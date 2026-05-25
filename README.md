@@ -4,7 +4,7 @@
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-teal)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests](https://github.com/tranguyeenn/LibroRank/actions/workflows/tests.yml/badge.svg)](https://github.com/tranguyeenn/LibroRank/actions/workflows/tests.yml)
+[![Tests](https://github.com/tranguyeenn/shelftxt/actions/workflows/tests.yml/badge.svg)](https://github.com/tranguyeenn/shelftxt/actions/workflows/tests.yml)
 
 Shelftxt is an open-source backend-driven recommendation system for organizing and ranking books in a TBR list. Built to explore recommendation logic, data pipelines, backend architecture, and scalable systems.
 

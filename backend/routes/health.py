@@ -6,7 +6,7 @@ router = APIRouter()
 @router.get("/")
 async def root():
     return {
-        "service": "LibroRank API",
+        "service": "ShelfTxt API",
         "docs": "/docs",
         "health": "/health",
         "books": "/books",
@@ -18,5 +18,5 @@ async def root():
 async def health():
     return {
         "status": "healthy",
-        "service": "LibroRank",
+        "service": "ShelfTxt",
     }

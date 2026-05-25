@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI):
 # -----------------------------
 
 app = FastAPI(
-    title="LibroRank API",
+    title="ShelfTxt API",
     lifespan=lifespan
 )
 
@@ -169,7 +169,7 @@ def _delete_book_by_title(title: str):
 @app.get("/")
 async def root():
     return {
-        "service": "LibroRank API",
+        "service": "ShelfTxt API",
         "docs": "/docs",
         "health": "/health",
         "books": "/books",
@@ -185,7 +185,7 @@ async def health():
 
     return {
         "status": "healthy",
-        "service": "LibroRank"
+        "service": "ShelfTxt"
     }
 
 

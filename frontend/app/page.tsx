@@ -557,7 +557,7 @@ export default function HomePage() {
     <div className="app-shell">
       <header className="top-bar">
         <div className="brand">
-          <h1 className="title">LibroRank</h1>
+          <h1 className="title">ShelfTxt</h1>
           <p className="tagline">Your shelves and next read — powered by your API library.</p>
         </div>
         <nav className="tabs" aria-label="Main">

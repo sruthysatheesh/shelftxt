@@ -115,7 +115,7 @@ def _validate_dataframe(df: pd.DataFrame, config: dict[str, Any]) -> dict[str, l
 
 def load_csv(csv: str | Path, mapping_config: dict[str, Any] | None = None) -> tuple[pd.DataFrame, dict[str, list[str]]]:
     """
-    Load arbitrary CSV data and map it into LibroRank canonical fields.
+    Load arbitrary CSV data and map it into ShelfTxt canonical fields.
 
     Returns (standardized_dataframe, validation_report).
     """

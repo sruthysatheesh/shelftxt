@@ -2,6 +2,8 @@
 
 Thanks for helping improve an open-source reading backend. Keep changes focused and documented.
 
+> **Review timing note:** ShelfTxt is maintained by one person. PR reviews are often slow, especially for large or cross-cutting changes.
+
 ---
 
 ## Ways to contribute

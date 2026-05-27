@@ -97,6 +97,13 @@ Open http://localhost:3000. See [docs/development.md](docs/development.md) for e
 python -m unittest discover -s tests -v
 ```
 
+Optional local tooling (if you prefer `pytest`):
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+```
+
 ---
 
 ## API routes

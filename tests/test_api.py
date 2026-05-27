@@ -15,7 +15,7 @@ class ApiTests(unittest.TestCase):
     @patch("backend.services.books.save_books")
     @patch("backend.services.books.get_all_books")
     @patch("backend.services.books.invalidate_recommendation_cache")
-    def test_add_book_appends_new_tbr_row(self, mock_load_data, mock_save_data, mock_invalidate_recommendation_cache):
+    def test_add_book_appends_new_tbr_row(self, mock_invalidate_recommendation_cache, mock_load_data, mock_save_data):
         base_df = pd.DataFrame(
             [
                 {
@@ -41,7 +41,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "Book added"})
         self.assertTrue(mock_save_data.called)
-        mock_invalidate.assert_called_once()
+        mock_invalidate_recommendation_cache.assert_called_once()
         saved_df = mock_save_data.call_args.args[0]
         self.assertEqual(len(saved_df), 2)
         self.assertEqual(saved_df.iloc[-1]["Title"], "New Book")
